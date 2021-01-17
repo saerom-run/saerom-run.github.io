@@ -35,7 +35,7 @@
         this.distanceMeter = null;
         this.distanceRan = 0;
 
-        this.highestScore = 0;
+        this.highestScore = parseInt(window.localStorage.getItem("highScore")) || 0;
 
         this.time = 0;
         this.runningTime = 0;
@@ -1877,7 +1877,9 @@
 
         this.config = DistanceMeter.config;
         this.maxScoreUnits = this.config.MAX_DISTANCE_UNITS;
+
         this.init(canvasWidth);
+        this.setHighScore(parseInt(window.localStorage.getItem("highScore")) || 0);
     };
 
 
@@ -1905,7 +1907,7 @@
      */
     DistanceMeter.config = {
         // Number of digits.
-        MAX_DISTANCE_UNITS: 5,
+        MAX_DISTANCE_UNITS: 6,
 
         // Distance that causes achievement animation.
         ACHIEVEMENT_DISTANCE: 100,
@@ -2014,7 +2016,7 @@
         update: function (deltaTime, distance) {
             var paint = true;
             var playSound = false;
-
+            
             if (!this.acheivement) {
                 distance = this.getActualDistance(distance);
                 // Score has gone beyond the initial digit count.
@@ -2078,6 +2080,7 @@
         drawHighScore: function () {
             this.canvasCtx.save();
             this.canvasCtx.globalAlpha = .8;
+            
             for (var i = this.highScore.length - 1; i >= 0; i--) {
                 this.draw(i, parseInt(this.highScore[i], 10), true);
             }
@@ -2090,10 +2093,13 @@
          * @param {number} distance Distance ran in pixels.
          */
         setHighScore: function (distance) {
+            // save high score to localStorage
+            window.localStorage.setItem("highScore", distance);
+
             distance = this.getActualDistance(distance);
             var highScoreStr = (this.defaultString +
                 distance).substr(-this.maxScoreUnits);
-
+            
             this.highScore = ['10', '11', ''].concat(highScoreStr.split(''));
         },
 
